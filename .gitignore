@@ -1,12 +1,40 @@
-/batch.go
-/batch_test.go
-/client.go
-/client_test.go
-/errors.go
-/event.go
-/examples
-/go.mod
-/internal
-/option.go
-/retry.go
-/tryl.go
+# Binaries
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test binary
+*.test
+
+# Output of go coverage
+*.out
+coverage.html
+
+# Go workspace file
+go.work
+go.work.sum
+
+# Dependency directories
+vendor/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Debug
+__debug_bin*
+
+# Environment files
+.env
+.env.local
+
+.claude/

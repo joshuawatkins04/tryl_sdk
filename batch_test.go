@@ -37,7 +37,7 @@ func TestBatcher_ResultMapping(t *testing.T) {
 	}))
 	defer server.Close()
 
-	client, err := NewClient("actlog_test_key", WithBaseURL(server.URL))
+	client, err := NewClient("actlog_test_1234567890abcdef1234567890abcdef", WithBaseURL(server.URL))
 	if err != nil {
 		t.Fatalf("failed to create client: %v", err)
 	}
@@ -105,7 +105,7 @@ func TestBatcher_Add(t *testing.T) {
 				MaxBatchSize:  10,
 				FlushInterval: 100 * time.Millisecond,
 			}
-			client, err := NewClient("actlog_test_key",
+			client, err := NewClient("actlog_test_1234567890abcdef1234567890abcdef",
 				WithBaseURL(server.URL),
 				WithBatching(batchCfg))
 			if err != nil {
@@ -149,7 +149,7 @@ func TestBatcher_Flush(t *testing.T) {
 		MaxBatchSize:  10,
 		FlushInterval: 5 * time.Second, // Long interval, we'll flush manually
 	}
-	client, err := NewClient("actlog_test_key",
+	client, err := NewClient("actlog_test_1234567890abcdef1234567890abcdef",
 		WithBaseURL(server.URL),
 		WithBatching(batchCfg))
 	if err != nil {
@@ -187,7 +187,7 @@ func TestBatcher_Stop(t *testing.T) {
 		MaxBatchSize:  10,
 		FlushInterval: 100 * time.Millisecond,
 	}
-	client, err := NewClient("actlog_test_key",
+	client, err := NewClient("actlog_test_1234567890abcdef1234567890abcdef",
 		WithBaseURL(server.URL),
 		WithBatching(batchCfg))
 	if err != nil {

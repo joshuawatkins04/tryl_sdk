@@ -2,6 +2,7 @@ package tryl
 
 import (
 	"encoding/json"
+	"fmt"
 	"time"
 )
 
@@ -22,10 +23,55 @@ type Event struct {
 	Metadata json.RawMessage `json:"metadata,omitempty"`
 }
 
+// Getter methods for validation interface compatibility.
+func (e *Event) GetUserID() string          { return e.UserID }
+func (e *Event) GetAction() string          { return e.Action }
+func (e *Event) GetActorID() string         { return e.ActorID }
+func (e *Event) GetTargetType() string      { return e.TargetType }
+func (e *Event) GetTargetID() string        { return e.TargetID }
+func (e *Event) GetMetadata() json.RawMessage { return e.Metadata }
+
 // WithMetadata is a helper to set metadata from a map.
+//
+// Deprecated: This method silently ignores JSON marshaling errors.
+// Use WithMetadataValidated instead, which returns validation errors.
+// This method will be removed in v1.0.0.
 func (e Event) WithMetadata(m map[string]any) Event {
 	data, _ := json.Marshal(m)
 	e.Metadata = data
+	return e
+}
+
+// WithMetadataValidated sets metadata from a map with error handling.
+// It returns an error if the metadata cannot be marshaled to JSON.
+// This is the preferred method for setting metadata.
+//
+// Example:
+//
+//	event := tryl.Event{
+//	    UserID: "user_123",
+//	    Action: "document.created",
+//	}
+//	event, err := event.WithMetadataValidated(map[string]any{
+//	    "title": "My Document",
+//	    "size":  1024,
+//	})
+//	if err != nil {
+//	    return fmt.Errorf("invalid metadata: %w", err)
+//	}
+func (e Event) WithMetadataValidated(m map[string]any) (Event, error) {
+	data, err := json.Marshal(m)
+	if err != nil {
+		return e, fmt.Errorf("failed to marshal metadata: %w", err)
+	}
+	e.Metadata = data
+	return e, nil
+}
+
+// SetMetadata sets metadata directly from json.RawMessage.
+// This is useful when you already have validated JSON.
+func (e Event) SetMetadata(metadata json.RawMessage) Event {
+	e.Metadata = metadata
 	return e
 }
 
@@ -44,11 +90,43 @@ type EventFilter struct {
 	// ActorID filters events by actor.
 	ActorID string
 	// Action filters events by action type.
+	// Supports wildcards: "org.*" matches "org.created", "org.updated", etc.
+	// "*.created" matches "user.created", "org.created", etc.
 	Action string
+
+	// TargetType filters events by target resource type.
+	TargetType string
+	// TargetID filters events by target resource ID.
+	TargetID string
+
+	// StartTime filters events occurring at or after this time (inclusive).
+	// Use nil to not filter by start time.
+	StartTime *time.Time
+	// EndTime filters events occurring at or before this time (inclusive).
+	// Use nil to not filter by end time.
+	EndTime *time.Time
+
+	// MetadataContains filters events where metadata contains the specified JSON object.
+	// Uses JSONB containment (@> operator in PostgreSQL).
+	// Example: {"status": "active"} matches events with metadata containing this key-value.
+	MetadataContains map[string]any
+	// MetadataSearch performs full-text search in metadata.
+	// Searches across all text fields in the metadata JSON.
+	MetadataSearch string
+
+	// Cursor is an opaque pagination cursor returned by the previous query.
+	// When set, Offset is ignored (cursor-based pagination takes precedence).
+	// Cursor-based pagination is more efficient for large result sets.
+	Cursor string
+	// Offset is the number of events to skip (offset-based pagination).
+	// Deprecated: Use Cursor for better performance with large datasets.
+	Offset int
+
 	// Limit is the maximum number of events to return (max 100).
 	Limit int
-	// Offset is the number of events to skip.
-	Offset int
+	// Order specifies the sort order: "asc" (oldest first) or "desc" (newest first).
+	// Defaults to "desc" if not specified.
+	Order string
 }
 
 // EventList represents the response when listing events.
@@ -58,7 +136,11 @@ type EventList struct {
 	// HasMore indicates if there are more events to fetch.
 	HasMore bool `json:"has_more"`
 	// Total is the total count of matching events.
-	Total int `json:"total"`
+	// Only populated with offset-based pagination. Omitted with cursor-based pagination.
+	Total int `json:"total,omitempty"`
+	// NextCursor is the cursor to use for fetching the next page.
+	// Only populated with cursor-based pagination when HasMore is true.
+	NextCursor string `json:"next_cursor,omitempty"`
 }
 
 // StoredEvent represents an event retrieved from the API.

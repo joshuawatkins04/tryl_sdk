@@ -7,13 +7,15 @@ import (
 
 // Error codes returned by the API.
 const (
-	ErrCodeInvalidRequest  = "invalid_request"
-	ErrCodeValidationError = "validation_error"
-	ErrCodeUnauthorized    = "unauthorized"
-	ErrCodeForbidden       = "forbidden"
-	ErrCodeNotFound        = "not_found"
-	ErrCodeRateLimited     = "rate_limited"
-	ErrCodeInternalError   = "internal_error"
+	ErrCodeInvalidRequest   = "invalid_request"
+	ErrCodeValidationError  = "validation_error"
+	ErrCodeUnauthorized     = "unauthorized"
+	ErrCodeForbidden        = "forbidden"
+	ErrCodeNotFound         = "not_found"
+	ErrCodeProjectNotFound  = "project_not_found"
+	ErrCodeKeyNotFound      = "key_not_found"
+	ErrCodeRateLimited      = "rate_limited"
+	ErrCodeInternalError    = "internal_error"
 )
 
 // Sentinel errors for common conditions.
@@ -26,6 +28,15 @@ var (
 
 	// ErrValidation indicates a validation error in the request.
 	ErrValidation = errors.New("tryl: validation error")
+
+	// ErrInvalidAPIKey indicates the API key format is invalid.
+	ErrInvalidAPIKey = errors.New("tryl: invalid API key format")
+
+	// ErrProjectNotFound indicates the requested project was not found.
+	ErrProjectNotFound = errors.New("tryl: project not found")
+
+	// ErrKeyNotFound indicates the requested API key was not found.
+	ErrKeyNotFound = errors.New("tryl: API key not found")
 )
 
 // APIError represents an error response from the Activity Logger API.
@@ -58,6 +69,10 @@ func (e *APIError) Is(target error) bool {
 		return e.HTTPStatus == 429
 	case target == ErrValidation:
 		return e.Code == ErrCodeValidationError
+	case target == ErrProjectNotFound:
+		return e.Code == ErrCodeProjectNotFound || (e.HTTPStatus == 404 && e.Code == ErrCodeNotFound)
+	case target == ErrKeyNotFound:
+		return e.Code == ErrCodeKeyNotFound || (e.HTTPStatus == 404 && e.Code == ErrCodeNotFound)
 	default:
 		return false
 	}
@@ -95,6 +110,32 @@ func IsValidationError(err error) bool {
 	return errors.Is(err, ErrValidation)
 }
 
+// ValidationError represents a client-side validation error.
+// This wraps validation failures from the internal validation package
+// and provides a consistent public error type.
+type ValidationError struct {
+	// Field is the name of the field that failed validation.
+	Field string
+	// Message is the human-readable error message.
+	Message string
+}
+
+func (e *ValidationError) Error() string {
+	return fmt.Sprintf("tryl: validation error: %s: %s", e.Field, e.Message)
+}
+
+// Is implements errors.Is support.
+func (e *ValidationError) Is(target error) bool {
+	return target == ErrValidation
+}
+
+// IsClientValidationError reports whether the error is a client-side validation error.
+// This distinguishes client-side validation errors from server-side validation errors.
+func IsClientValidationError(err error) bool {
+	var validationErr *ValidationError
+	return errors.As(err, &validationErr)
+}
+
 // NetworkError wraps network-related errors.
 type NetworkError struct {
 	Op  string // Operation that failed (e.g., "dial", "read")
@@ -116,4 +157,22 @@ func (e *NetworkError) IsTemporary() bool {
 		return temp.Temporary()
 	}
 	return true
+}
+
+// IsProjectNotFound reports whether the error indicates a project was not found.
+func IsProjectNotFound(err error) bool {
+	var apiErr *APIError
+	if errors.As(err, &apiErr) {
+		return apiErr.Code == ErrCodeProjectNotFound || (apiErr.HTTPStatus == 404 && apiErr.Code == ErrCodeNotFound)
+	}
+	return errors.Is(err, ErrProjectNotFound)
+}
+
+// IsKeyNotFound reports whether the error indicates an API key was not found.
+func IsKeyNotFound(err error) bool {
+	var apiErr *APIError
+	if errors.As(err, &apiErr) {
+		return apiErr.Code == ErrCodeKeyNotFound || (apiErr.HTTPStatus == 404 && apiErr.Code == ErrCodeNotFound)
+	}
+	return errors.Is(err, ErrKeyNotFound)
 }

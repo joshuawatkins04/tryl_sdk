@@ -1,3 +1,3 @@
-module github.com/wato/tryl_sdk
+module github.com/joshuawatkins04/tryl_sdk
 
 go 1.21

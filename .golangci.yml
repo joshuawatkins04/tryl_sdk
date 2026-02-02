@@ -20,7 +20,7 @@ linters-settings:
   gofmt:
     simplify: true
   goimports:
-    local-prefixes: github.com/wato/tryl_sdk
+    local-prefixes: github.com/joshuawatkins04/tryl_sdk
   misspell:
     locale: US
 

@@ -2,8 +2,8 @@
 
 The official Go SDK for the Activity Logger API. Track user activity events with type-safe validation, advanced querying, and project management capabilities.
 
-[![Go Reference](https://pkg.go.dev/badge/github.com/wato/tryl_sdk.svg)](https://pkg.go.dev/github.com/wato/tryl_sdk)
-[![Go Report Card](https://goreportcard.com/badge/github.com/wato/tryl_sdk)](https://goreportcard.com/report/github.com/wato/tryl_sdk)
+[![Go Reference](https://pkg.go.dev/badge/github.com/joshuawatkins04/tryl_sdk.svg)](https://pkg.go.dev/github.com/joshuawatkins04/tryl_sdk)
+[![Go Report Card](https://goreportcard.com/badge/github.com/joshuawatkins04/tryl_sdk)](https://goreportcard.com/report/github.com/joshuawatkins04/tryl_sdk)
 
 ## Features
 
@@ -19,7 +19,7 @@ The official Go SDK for the Activity Logger API. Track user activity events with
 ## Installation
 
 ```bash
-go get github.com/wato/tryl_sdk
+go get github.com/joshuawatkins04/tryl_sdk
 ```
 
 ## Quick Start
@@ -33,7 +33,7 @@ import (
 	"context"
 	"log"
 
-	"github.com/wato/tryl_sdk"
+	"github.com/joshuawatkins04/tryl_sdk"
 )
 
 func main() {
@@ -502,7 +502,7 @@ event := event.SetMetadata(rawJSON)
 
 ## API Reference
 
-Full API documentation is available at [pkg.go.dev](https://pkg.go.dev/github.com/wato/tryl_sdk).
+Full API documentation is available at [pkg.go.dev](https://pkg.go.dev/github.com/joshuawatkins04/tryl_sdk).
 
 ## Contributing
 
@@ -516,4 +516,4 @@ This SDK is licensed under the MIT License. See [LICENSE](LICENSE) for details.
 
 - 📧 Email: support@activitylogger.com
 - 📚 Documentation: https://docs.activitylogger.com
-- 🐛 Issues: https://github.com/wato/tryl_sdk/issues
+- 🐛 Issues: https://github.com/joshuawatkins04/tryl_sdk/issues

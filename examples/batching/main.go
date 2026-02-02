@@ -9,7 +9,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/wato/tryl_sdk"
+	"github.com/joshuawatkins04/tryl_sdk"
 )
 
 func main() {

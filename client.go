@@ -9,8 +9,8 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/wato/tryl_sdk/internal/transport"
-	"github.com/wato/tryl_sdk/internal/validation"
+	"github.com/joshuawatkins04/tryl_sdk/internal/transport"
+	"github.com/joshuawatkins04/tryl_sdk/internal/validation"
 )
 
 // Client is the Activity Logger SDK client.

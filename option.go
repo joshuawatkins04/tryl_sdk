@@ -8,8 +8,8 @@ import (
 )
 
 const (
-	defaultBaseURL = "https://api.activitylogger.io"
-	defaultTimeout = 30 * time.Second
+	defaultBaseURL = "https://tryl.fly.dev"
+	defaultTimeout = 10 * time.Second
 )
 
 // HTTPDoer is an interface for HTTP operations (for testing).
@@ -40,7 +40,7 @@ func newDefaultConfig() *clientConfig {
 }
 
 // WithBaseURL sets a custom API base URL.
-// Default: "https://api.activitylogger.io"
+// Default: "https://tryl.fly.dev"
 func WithBaseURL(url string) Option {
 	return func(c *clientConfig) error {
 		if url == "" {
@@ -64,7 +64,7 @@ func WithHTTPClient(client HTTPDoer) Option {
 }
 
 // WithTimeout sets the request timeout.
-// Default: 30 seconds
+// Default: 10 seconds
 func WithTimeout(d time.Duration) Option {
 	return func(c *clientConfig) error {
 		if d <= 0 {
